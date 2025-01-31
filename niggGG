@@ -60,6 +60,56 @@ MainTab:CreateButton({
     end
 })
 
+MainTab:CreateLabel("Self")
+
+local SelfSlider1 = MainTab:CreateSlider({
+    Name = "Arm Height (Self)",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, 0))
+    end
+})
+
+local SelfSlider2 = MainTab:CreateSlider({
+    Name = "Arm Catapult (Self)",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, -s))
+    end
+})
+
+local SelfSlider3 = MainTab:CreateSlider({
+    Name = "Arm Forward (Self)",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, -s))
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Reset Self Sliders",
+    Callback = function()
+        SelfSlider1:Set(0)
+        SelfSlider2:Set(0)
+        SelfSlider3:Set(0)
+        wait(0.1)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
+    end
+})
+
 local OrbitTab = Window:CreateTab("Orbit", 4483345998)
 
 local selfOrbitEnabled = false
