@@ -1,0 +1,112 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local Window = Rayfield:CreateWindow({
+    Name = "Arm Changer by Kaan",
+    LoadingTitle = "Loading UI...",
+    LoadingSubtitle = "Please wait",
+    ConfigurationSaving = { Enabled = true, FolderName = "RayfieldTest" }
+})
+
+local MainTab = Window:CreateTab("Main", 4483345998)
+
+local Slider1 = MainTab:CreateSlider({
+    Name = "Arm Height",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, 0))
+        end
+    end
+})
+
+local Slider2 = MainTab:CreateSlider({
+    Name = "Arm Catapult",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, -s))
+        end
+    end
+})
+
+local Slider3 = MainTab:CreateSlider({
+    Name = "Arm Forward",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, -s))
+        end
+    end
+})
+
+MainTab:CreateButton({
+    Name = "Reset Sliders",
+    Callback = function()
+        Slider1:Set(0)
+        Slider2:Set(0)
+        Slider3:Set(0)
+        wait(0.1)
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
+        end
+    end
+})
+
+local SelfTab = Window:CreateTab("Self", 4483345998)
+SelfTab:CreateLabel("Only Works on you and not others")
+
+local SelfSlider1 = SelfTab:CreateSlider({
+    Name = "Arm Height",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, 0))
+    end
+})
+
+local SelfSlider2 = SelfTab:CreateSlider({
+    Name = "Arm Catapult",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, -s))
+    end
+})
+
+local SelfSlider3 = SelfTab:CreateSlider({
+    Name = "Arm Forward",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, -s))
+    end
+})
+
+SelfTab:CreateButton({
+    Name = "Reset Sliders",
+    Callback = function()
+        SelfSlider1:Set(0)
+        SelfSlider2:Set(0)
+        SelfSlider3:Set(0)
+        wait(0.1)
+        local player = game.Players.LocalPlayer
+        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
+    end
+})
