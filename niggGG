@@ -61,7 +61,6 @@ MainTab:CreateButton({
 })
 
 local SelfTab = Window:CreateTab("Self", 4483345998)
-SelfTab:CreateLabel("Only Works on you and not others")
 
 local SelfSlider1 = SelfTab:CreateSlider({
     Name = "Arm Height",
@@ -72,6 +71,18 @@ local SelfSlider1 = SelfTab:CreateSlider({
     Callback = function(s)
         local player = game.Players.LocalPlayer
         player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, 0))
+    end
+})
+SelfTab:CreateButton({
+    Name = "Arm Height +",
+    Callback = function()
+        SelfSlider1:Set(SelfSlider1.CurrentValue + 1)
+    end
+})
+SelfTab:CreateButton({
+    Name = "Arm Height -",
+    Callback = function()
+        SelfSlider1:Set(SelfSlider1.CurrentValue - 1)
     end
 })
 
@@ -86,6 +97,18 @@ local SelfSlider2 = SelfTab:CreateSlider({
         player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, -s))
     end
 })
+SelfTab:CreateButton({
+    Name = "Arm Catapult +",
+    Callback = function()
+        SelfSlider2:Set(SelfSlider2.CurrentValue + 1)
+    end
+})
+SelfTab:CreateButton({
+    Name = "Arm Catapult -",
+    Callback = function()
+        SelfSlider2:Set(SelfSlider2.CurrentValue - 1)
+    end
+})
 
 local SelfSlider3 = SelfTab:CreateSlider({
     Name = "Arm Forward",
@@ -98,6 +121,18 @@ local SelfSlider3 = SelfTab:CreateSlider({
         player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, -s))
     end
 })
+SelfTab:CreateButton({
+    Name = "Arm Forward +",
+    Callback = function()
+        SelfSlider3:Set(SelfSlider3.CurrentValue + 1)
+    end
+})
+SelfTab:CreateButton({
+    Name = "Arm Forward -",
+    Callback = function()
+        SelfSlider3:Set(SelfSlider3.CurrentValue - 1)
+    end
+})
 
 SelfTab:CreateButton({
     Name = "Reset Sliders",
@@ -108,5 +143,66 @@ SelfTab:CreateButton({
         wait(0.1)
         local player = game.Players.LocalPlayer
         player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
+    end
+})
+
+local ControlTab = Window:CreateTab("Control", 4483345998)
+local SelectedPlayer = ""
+local ControlToggle = false
+
+ControlTab:CreateTextbox({
+    Name = "Enter Player Name",
+    Callback = function(text)
+        SelectedPlayer = text
+    end
+})
+
+ControlTab:CreateToggle({
+    Name = "Enable Control",
+    CurrentValue = false,
+    Callback = function(state)
+        ControlToggle = state
+    end
+})
+
+local function ControlPlayerArm(s, x, y, z)
+    if ControlToggle and SelectedPlayer ~= "" then
+        local player = game.Players:FindFirstChild(SelectedPlayer)
+        if player and player.Character then
+            player.Character.ArmAngleChange:FireServer(CFrame.new(x, y, z))
+        end
+    end
+end
+
+local ControlSlider1 = ControlTab:CreateSlider({
+    Name = "Arm Height",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        ControlPlayerArm(s, 1, s, 0)
+    end
+})
+
+local ControlSlider2 = ControlTab:CreateSlider({
+    Name = "Arm Catapult",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        ControlPlayerArm(s, 1, s, -s)
+    end
+})
+
+local ControlSlider3 = ControlTab:CreateSlider({
+    Name = "Arm Forward",
+    Range = {0, 200},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = 5,
+    Callback = function(s)
+        ControlPlayerArm(s, 1, 0.56, -s)
     end
 })
