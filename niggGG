@@ -60,149 +60,124 @@ MainTab:CreateButton({
     end
 })
 
-local SelfTab = Window:CreateTab("Self", 4483345998)
+local OrbitTab = Window:CreateTab("Orbit", 4483345998)
 
-local SelfSlider1 = SelfTab:CreateSlider({
-    Name = "Arm Height",
-    Range = {0, 200},
-    Increment = 0.5,
-    Suffix = "",
-    CurrentValue = 5,
-    Callback = function(s)
-        local player = game.Players.LocalPlayer
-        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, 0))
-    end
-})
-SelfTab:CreateButton({
-    Name = "Arm Height +",
-    Callback = function()
-        SelfSlider1:Set(SelfSlider1.CurrentValue + 1)
-    end
-})
-SelfTab:CreateButton({
-    Name = "Arm Height -",
-    Callback = function()
-        SelfSlider1:Set(SelfSlider1.CurrentValue - 1)
-    end
-})
+local selfOrbitEnabled = false
+local selfOrbitSpeed = 5
+local selfOrbitRadius = 5
 
-local SelfSlider2 = SelfTab:CreateSlider({
-    Name = "Arm Catapult",
-    Range = {0, 200},
-    Increment = 0.5,
-    Suffix = "",
-    CurrentValue = 5,
-    Callback = function(s)
-        local player = game.Players.LocalPlayer
-        player.Character.ArmAngleChange:FireServer(CFrame.new(1, s, -s))
+task.spawn(function()
+    while true do
+        if selfOrbitEnabled then
+            local player = game.Players.LocalPlayer
+            local angle = tick() * selfOrbitSpeed
+            local x = math.cos(angle) * selfOrbitRadius
+            local z = math.sin(angle) * selfOrbitRadius
+            player.Character.ArmAngleChange:FireServer(CFrame.new(x, 1, z))
+        end
+        task.wait(0.03)
     end
-})
-SelfTab:CreateButton({
-    Name = "Arm Catapult +",
-    Callback = function()
-        SelfSlider2:Set(SelfSlider2.CurrentValue + 1)
-    end
-})
-SelfTab:CreateButton({
-    Name = "Arm Catapult -",
-    Callback = function()
-        SelfSlider2:Set(SelfSlider2.CurrentValue - 1)
-    end
-})
+end)
 
-local SelfSlider3 = SelfTab:CreateSlider({
-    Name = "Arm Forward",
-    Range = {0, 200},
-    Increment = 0.5,
-    Suffix = "",
-    CurrentValue = 5,
-    Callback = function(s)
-        local player = game.Players.LocalPlayer
-        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, -s))
-    end
-})
-SelfTab:CreateButton({
-    Name = "Arm Forward +",
-    Callback = function()
-        SelfSlider3:Set(SelfSlider3.CurrentValue + 1)
-    end
-})
-SelfTab:CreateButton({
-    Name = "Arm Forward -",
-    Callback = function()
-        SelfSlider3:Set(SelfSlider3.CurrentValue - 1)
-    end
-})
+OrbitTab:CreateLabel("Orbit Arm Settings")
 
-SelfTab:CreateButton({
-    Name = "Reset Sliders",
-    Callback = function()
-        SelfSlider1:Set(0)
-        SelfSlider2:Set(0)
-        SelfSlider3:Set(0)
-        wait(0.1)
-        local player = game.Players.LocalPlayer
-        player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
-    end
-})
-
-local ControlTab = Window:CreateTab("Control", 4483345998)
-local SelectedPlayer = ""
-local ControlToggle = false
-
-ControlTab:CreateTextbox({
-    Name = "Enter Player Name",
-    Callback = function(text)
-        SelectedPlayer = text
-    end
-})
-
-ControlTab:CreateToggle({
-    Name = "Enable Control",
+OrbitTab:CreateToggle({
+    Name = "Orbit Arm",
     CurrentValue = false,
     Callback = function(state)
-        ControlToggle = state
+        selfOrbitEnabled = state
     end
 })
 
-local function ControlPlayerArm(s, x, y, z)
-    if ControlToggle and SelectedPlayer ~= "" then
-        local player = game.Players:FindFirstChild(SelectedPlayer)
-        if player and player.Character then
-            player.Character.ArmAngleChange:FireServer(CFrame.new(x, y, z))
+OrbitTab:CreateSlider({
+    Name = "Orbit Speed (Self)",
+    Range = {0, 500},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = selfOrbitSpeed,
+    Callback = function(s)
+        selfOrbitSpeed = s
+    end
+})
+
+OrbitTab:CreateSlider({
+    Name = "Orbit Radius (Self)",
+    Range = {0, 500},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = selfOrbitRadius,
+    Callback = function(s)
+        selfOrbitRadius = s
+    end
+})
+
+local orbitEveryoneEnabled = false
+local orbitEveryoneSpeed = 5
+local orbitEveryoneRadius = 5
+
+task.spawn(function()
+    while true do
+        if orbitEveryoneEnabled then
+            local angle = tick() * orbitEveryoneSpeed
+            local x = math.cos(angle) * orbitEveryoneRadius
+            local z = math.sin(angle) * orbitEveryoneRadius
+            for _, player in ipairs(game.Players:GetPlayers()) do
+                if player.Character and player.Character:FindFirstChild("ArmAngleChange") then
+                    player.Character.ArmAngleChange:FireServer(CFrame.new(x, 1, z))
+                end
+            end
         end
+        task.wait(0.03)
     end
-end
+end)
 
-local ControlSlider1 = ControlTab:CreateSlider({
-    Name = "Arm Height",
-    Range = {0, 200},
-    Increment = 0.5,
-    Suffix = "",
-    CurrentValue = 5,
-    Callback = function(s)
-        ControlPlayerArm(s, 1, s, 0)
-    end
-})
+OrbitTab:CreateLabel("Orbit Everyone")
 
-local ControlSlider2 = ControlTab:CreateSlider({
-    Name = "Arm Catapult",
-    Range = {0, 200},
-    Increment = 0.5,
-    Suffix = "",
-    CurrentValue = 5,
-    Callback = function(s)
-        ControlPlayerArm(s, 1, s, -s)
+OrbitTab:CreateToggle({
+    Name = "Orbit Everyone",
+    CurrentValue = false,
+    Callback = function(state)
+        orbitEveryoneEnabled = state
     end
 })
 
-local ControlSlider3 = ControlTab:CreateSlider({
-    Name = "Arm Forward",
-    Range = {0, 200},
+OrbitTab:CreateSlider({
+    Name = "Orbit Speed (Everyone)",
+    Range = {0, 500},
     Increment = 0.5,
     Suffix = "",
-    CurrentValue = 5,
+    CurrentValue = orbitEveryoneSpeed,
     Callback = function(s)
-        ControlPlayerArm(s, 1, 0.56, -s)
+        orbitEveryoneSpeed = s
+    end
+})
+
+OrbitTab:CreateSlider({
+    Name = "Orbit Radius (Everyone)",
+    Range = {0, 500},
+    Increment = 0.5,
+    Suffix = "",
+    CurrentValue = orbitEveryoneRadius,
+    Callback = function(s)
+        orbitEveryoneRadius = s
+    end
+})
+
+OrbitTab:CreateButton({
+    Name = "Reset Arm and Orbit",
+    Callback = function()
+        selfOrbitEnabled = false
+        selfOrbitSpeed = 5
+        selfOrbitRadius = 5
+        orbitEveryoneEnabled = false
+        orbitEveryoneSpeed = 5
+        orbitEveryoneRadius = 5
+        Slider1:Set(0)
+        Slider2:Set(0)
+        Slider3:Set(0)
+        wait(0.1)
+        for _, player in ipairs(game.Players:GetPlayers()) do
+            player.Character.ArmAngleChange:FireServer(CFrame.new(1, 0.56, 0, 0, 0.01, 0.1, 0, 0, 0, 0, 0, 1))
+        end
     end
 })
